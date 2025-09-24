@@ -1,5 +1,5 @@
 // === Настройки ===
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 3;
 const SHUFFLE_WINDOW_MS = 10 * 60 * 1000;
 
 // медиазапрос для мобильного обтекания
