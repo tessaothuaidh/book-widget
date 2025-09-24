@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Подборка книг — виджет</title>
+
+  <!-- Стили -->
+  <link rel="stylesheet" href="./styles.css" />
+
+  <!-- Мета для лучшей встраиваемости -->
+  <meta name="referrer" content="no-referrer" />
+</head>
+<body>
+  <div id="widget-root">
+    <header class="wg-header">
+      <!-- Можно скрыть заголовок, если не нужен -->
+      <h1 class="sr-only">Подборка книг</h1>
+    </header>
+
+    <main id="books-list" aria-live="polite"></main>
+
+    <nav class="pager" aria-label="Навигация по страницам">
+      <button class="pager-btn" id="prevBtn" type="button" aria-label="Предыдущая страница">‹</button>
+      <span id="pageIndicator" class="pager-indicator">1 / 1</span>
+      <button class="pager-btn" id="nextBtn" type="button" aria-label="Следующая страница">›</button>
+    </nav>
+  </div>
+
+  <!-- Скрипт -->
+  <script src="./widget.js" defer></script>
+</body>
+</html>
