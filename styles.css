@@ -73,14 +73,7 @@ html,body{margin:0;background:transparent;color:var(--text)}
 /* Контент */
 .book-content{display:flex;flex-direction:column;gap:8px;min-height:140px}
 .book-title{font-family:var(--font-display);font-weight:400;font-size:1.1rem;letter-spacing:.2px}
-
-/* Автор */
-.book-author{
-  font-size:.9rem;
-  color:var(--muted);
-  margin-top:-4px;
-  margin-bottom:4px;
-}
+.book-author{font-size:.9rem;color:var(--muted);margin-top:-4px;margin-bottom:4px}
 
 /* Теги */
 .book-tags{display:flex;align-items:center;justify-content:center;gap:6px;margin:2px 0 4px}
@@ -112,7 +105,6 @@ html,body{margin:0;background:transparent;color:var(--text)}
   transition:transform .25s ease,border-color .25s ease
 }
 .spoiler-toggle[aria-expanded="true"] .chev{transform:rotate(225deg)}
-
 .spoiler-content{
   max-height:0;height:0;overflow:hidden;opacity:0;visibility:hidden;pointer-events:none;
   transition:max-height .35s ease,opacity .35s ease,margin-top .35s ease;will-change:max-height,opacity;
@@ -121,66 +113,31 @@ html,body{margin:0;background:transparent;color:var(--text)}
 .spoiler-content.open{max-height:280px;height:auto;opacity:1;visibility:visible;pointer-events:auto;margin-top:6px}
 .reason{font-size:.95rem;color:var(--text);opacity:.95;line-height:1.45;font-family:var(--font-serif)}
 
-/* ===== МОБИЛЬНОЕ ОБТЕКАНИЕ ТЕКСТОМ (≤480px) ===== */
-@media (max-width: 480px){
-  .book-card.mobile-flow .book-inner{display:block}
-  .book-card.mobile-flow .book-content{display:block}
+/* ===== Узкие контейнеры (≤760px): включаем обтекание текстом ===== */
+@media (max-width: 760px){
+  .book-card.flow .book-inner{display:block}
+  .book-card.flow .book-content{display:block}
 
-  .book-card.mobile-flow .cover-float{
+  .book-card.flow .cover-float{
     float:left;width:34vw;max-width:120px;aspect-ratio:2/3;border-radius:var(--radius);
     overflow:hidden;background:#082c39;margin:2px 12px 8px 0;
   }
-  .book-card.mobile-flow .cover-float img{
+  .book-card.flow .cover-float img{
     width:100%;height:auto;display:block;object-fit:contain;object-position:center;image-rendering:auto;
   }
-  .book-card.mobile-flow .book-content::after{content:"";display:block;clear:both}
-}
+  .book-card.flow .book-content::after{content:"";display:block;clear:both}
 
-/* ===== МОБИЛЬНЫЕ ПРАВКИ ДЛЯ ТЕГОВ И КНОПКИ ===== */
-@media (max-width: 480px){
+  /* Теги: перенос по «чипам», центрирование */
   .book-tags{
-    display:flex;
-    flex-wrap:wrap;
-    justify-content:center;
-    gap:6px 8px;
-    padding:0 6px;
-    max-width:100%;
+    display:flex;flex-wrap:wrap;justify-content:center;gap:6px 8px;padding:0 6px;max-width:100%;
   }
   .tag{white-space:nowrap;flex:0 0 auto}
+
+  /* Отступ над кнопкой «Читать», чтобы аннотация не прилипала */
   .read-btn{margin-top:8px}
 }
 
-/* Адаптив ширины левой колонки (для десктопной сетки) */
+/* Адаптив ширины левой колонки (для широких экранов) */
 @media (max-width:420px){.book-inner{grid-template-columns:90px 1fr;gap:10px}.book-title{font-size:1.02rem}}
 @media (min-width:520px){.book-inner{grid-template-columns:130px 1fr}}
 @media (min-width:720px){.book-inner{grid-template-columns:150px 1fr}}
-
-/* ===== SINGLE: обтекание и фикс ширины на десктопе ===== */
-.book-card.single-flow .book-inner{display:block}
-.book-card.single-flow .book-content{display:block}
-
-/* на всякий случай: левую колонку в single прячем, чтобы ничего не «разъезжалось» */
-.book-card.single-flow .book-cover{display:none !important}
-
-/* десктопная ширина float-обложки в single */
-.book-card.single-flow .cover-float{
-  float:left;
-  width:180px;              /* жёсткий фикс */
-  max-width:180px;
-  aspect-ratio:2/3;
-  border-radius:var(--radius);
-  overflow:hidden;
-  background:#082c39;
-  margin:2px 14px 10px 0;
-}
-.book-card.single-flow .cover-float img{
-  width:100%;height:auto;display:block;object-fit:contain;object-position:center
-}
-.book-card.single-flow .book-content::after{content:"";display:block;clear:both}
-
-/* мобильная ширина для single */
-@media (max-width:480px){
-  .book-card.single-flow .cover-float{
-    width:34vw;max-width:120px;margin:2px 12px 8px 0;
-  }
-}
