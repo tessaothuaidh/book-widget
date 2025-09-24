@@ -10,7 +10,7 @@ const COMPACT_MODE = params.has('compact') || rootEl?.dataset.compact === '1';
 
 // Если задано data-page-size, используем его (кроме single)
 const DATA_PAGE_SIZE   = parseInt(rootEl?.dataset.pageSize || '', 10);
-const DEFAULT_PAGE_SIZE = Number.isFinite(DATA_PAGE_SIZE) && DATA_PAGE_SIZE > 0 ? DATA_PAGE_SIZE : 5;
+const DEFAULT_PAGE_SIZE = Number.isFinite(DATA_PAGE_SIZE) && DATA_PAGE_SIZE > 0 ? DATA_PAGE_SIZE : 3;
 const PAGE_SIZE = SINGLE_MODE ? 1 : DEFAULT_PAGE_SIZE;
 
 // === Утилиты ===
