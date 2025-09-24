@@ -1,208 +1,119 @@
-/* =========
-   СТИЛЬ ТВОЕЙ СТРАНИЦЫ TAPLINK
-   ========= */
 @import url("https://fonts.googleapis.com/css2?family=Amarante&display=swap");
 
 :root{
-  /* Палитра из темы Taplink */
-  --bg: #002343;        /* общий фон страницы */
-  --panel: #0e3343;     /* цвет панелей/блоков */
-  --panel-alpha: rgba(14, 51, 67, 0.92);
-  --text: #ffffff;
-  --muted: #cfe6ee;
+  --bg:#002343;
+  --panel:#0e3343;
+  --panel-alpha:rgba(14,51,67,.92);
+  --text:#fff;
+  --muted:#cfe6ee;
 
-  /* Акценты и градиенты */
-  --accent1: #048384;
-  --accent2: #044a64;
-  --accent3: #041436;   /* глубокая тень/край градиента */
+  --accent1:#048384;
+  --accent2:#044a64;
+  --accent3:#041436;
 
-  /* Доп. акцент */
-  --gold: #e8d892;
+  --radius-s:10px;
+  --radius:12px;
+  --radius-l:16px;
+  --shadow:0 10px 28px rgba(4,131,132,.22);
 
-  /* Кнопки */
-  --btn-bg: #ffffff;
-  --btn-text: #0b0f14;
+  --font-display:"Amarante",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial;
+  --font-base:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial;
+  --font-serif:Georgia,"Times New Roman",serif;
 
-  /* UI */
-  --radius-s: 10px;
-  --radius: 12px;
-  --radius-l: 16px;
-  --shadow: 0 10px 28px rgba(4, 131, 132, .22);
-
-  /* Шрифты */
-  --font-display: "Amarante", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
-  --font-base: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
-  --font-serif: Georgia, "Times New Roman", serif;
-
-  /* Чипы/теги */
-  --chip-bg: rgba(255,255,255,0.06);
-  --chip-text: #d7e4e6;
+  --chip-bg:rgba(255,255,255,.06);
+  --chip-text:#d7e4e6;
 }
 
-/* =========
-   ГЛОБАЛ
-   ========= */
-* { box-sizing: border-box; }
-html, body { margin: 0; background: transparent; color: var(--text); }
-#widget-root { padding: 8px; background: transparent; font-family: var(--font-base); }
-.sr-only{ position:absolute!important; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+*{box-sizing:border-box}
+html,body{margin:0;background:transparent;color:var(--text)}
+#widget-root{padding:8px;background:transparent;font-family:var(--font-base)}
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 
-/* =========
-   ПАГИНАЦИЯ
-   ========= */
-.pager{
-  display:flex; align-items:center; justify-content:center; gap:12px;
-  margin: 16px 0 8px;
-}
+/* Пагинация */
+.pager{display:flex;align-items:center;justify-content:center;gap:12px;margin:16px 0 8px}
 .pager-btn{
-  background: linear-gradient(#002343,#002343) padding-box,
-              linear-gradient(135deg, var(--accent1), var(--accent2), var(--accent3)) border-box;
-  border: 2px solid transparent;
-  color: var(--text);
-  border-radius: var(--radius);
-  padding: 8px 14px;
-  cursor: pointer;
-  box-shadow: var(--shadow);
-  transition: transform .12s ease, opacity .2s ease;
+  background:linear-gradient(#002343,#002343) padding-box,
+             linear-gradient(135deg,var(--accent1),var(--accent2),var(--accent3)) border-box;
+  border:2px solid transparent;color:var(--text);border-radius:var(--radius);
+  padding:8px 14px;cursor:pointer;box-shadow:var(--shadow);
+  transition:transform .12s ease,opacity .2s ease
 }
-.pager-btn:active{ transform: scale(.98) }
-.pager-btn:disabled{ opacity:.45; cursor: default; box-shadow: none; }
-.pager-indicator{ color: var(--chip-text); font-size: .95rem; }
+.pager-btn:active{transform:scale(.98)}
+.pager-btn:disabled{opacity:.45;cursor:default;box-shadow:none}
+.pager-indicator{color:var(--chip-text);font-size:.95rem}
 
-/* =========
-   СПИСОК КНИГ
-   ========= */
-#books-list{ display: grid; gap: 12px; }
+/* Список */
+#books-list{display:grid;gap:12px}
 
-/* Карточка с градиентной рамкой */
+/* Карточка */
 .book-card{
-  position: relative;
-  border-radius: var(--radius-l);
-  background: var(--panel-alpha);
-  box-shadow: var(--shadow);
-  overflow: hidden;
-  padding: 12px;
+  position:relative;border-radius:var(--radius-l);background:var(--panel-alpha);
+  box-shadow:var(--shadow);overflow:hidden;padding:12px
 }
 .book-card::before{
-  content:"";
-  position:absolute; inset:0;
-  padding: 2px; /* толщина рамки */
-  border-radius: inherit;
-  background: linear-gradient(135deg, var(--accent1), var(--accent2), var(--accent3));
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor; mask-composite: exclude;
-  pointer-events:none;
+  content:"";position:absolute;inset:0;padding:2px;border-radius:inherit;
+  background:linear-gradient(135deg,var(--accent1),var(--accent2),var(--accent3));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none
 }
 
-/* Внутренний грид: слева обложка, справа контент */
-.book-inner{
-  display: grid;
-  grid-template-columns: 110px 1fr;
-  gap: 12px;
-  align-items: stretch;
-}
+/* Сетка карточки */
+.book-inner{display:grid;grid-template-columns:110px 1fr;gap:12px;align-items:stretch}
 
-/* Обложка; можно заменить на aspect-ratio: 2/3 при желании */
-.book-cover{ width: 100%; height: 100%; border-radius: var(--radius); overflow: hidden; background: #0003; }
-.book-cover img{ width: 100%; height: 100%; object-fit: cover; display:block; }
+/* ОБЛОЖКА — всегда целиком */
+.book-cover{
+  position:relative;width:100%;aspect-ratio:2/3;border-radius:var(--radius);
+  overflow:hidden;background:#082c39
+}
+.book-cover img{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:contain;object-position:center;display:block;image-rendering:auto
+}
 
 /* Контент */
-.book-content{ display: flex; flex-direction: column; gap: 8px; min-height: 140px; }
-.book-title{
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-size: 1.1rem;
-  letter-spacing:.2px;
-}
+.book-content{display:flex;flex-direction:column;gap:8px;min-height:140px}
+.book-title{font-family:var(--font-display);font-weight:400;font-size:1.1rem;letter-spacing:.2px}
 
-/* Теги сверху, по центру — «ненавязчивые» */
-.book-tags{
-  display:flex; align-items:center; justify-content:center; gap:6px;
-  margin: 2px 0 4px;
-}
-.tag{
-  font-size: .8rem; padding: 4px 8px; border-radius: 999px;
-  background: var(--chip-bg); color: var(--chip-text); white-space: nowrap;
-}
+/* Теги */
+.book-tags{display:flex;align-items:center;justify-content:center;gap:6px;margin:2px 0 4px}
+.tag{font-size:.8rem;padding:4px 8px;border-radius:999px;background:var(--chip-bg);color:var(--chip-text);white-space:nowrap}
 
-/* Аннотация — как на странице (Georgia) */
-.book-annotation{
-  font-family: var(--font-serif);
-  font-size: .98rem;
-  color: var(--text);
-  opacity: .95;
-  line-height: 1.5;
-}
+/* Аннотация */
+.book-annotation{font-family:var(--font-serif);font-size:.98rem;color:var(--text);opacity:.95;line-height:1.5}
 
-/* Кнопка «Читать» — ГРАДИЕНТ в фирменной гамме */
+/* Кнопка «Читать» — градиент */
 .read-btn{
-  align-self: flex-start;
-  appearance: none;
-  border: 0;
-  border-radius: var(--radius);
-  padding: 10px 16px;
-  background: linear-gradient(135deg, var(--accent1), var(--accent2));
-  color: #fff;
-  font-weight: 700;
-  letter-spacing:.2px;
-  cursor: pointer;
-  text-decoration: none;
-  box-shadow: var(--shadow);
-  transition: transform .12s ease, filter .15s ease;
+  align-self:flex-start;appearance:none;border:0;border-radius:var(--radius);
+  padding:10px 16px;background:linear-gradient(135deg,var(--accent1),var(--accent2));
+  color:#fff;font-weight:700;letter-spacing:.2px;cursor:pointer;text-decoration:none;
+  box-shadow:var(--shadow);transition:transform .12s ease,filter .15s ease
 }
-.read-btn:hover{ filter: brightness(1.05); }
-.read-btn:active{ transform: translateY(1px); }
+.read-btn:hover{filter:brightness(1.05)}
+.read-btn:active{transform:translateY(1px)}
 
-/* Тонкий разделитель перед спойлером */
-.book-divider{
-  height: 1px; margin-top: 8px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,.25), transparent);
-}
-
-/* Кнопка-спойлер с иконкой-стрелкой */
+/* Спойлер */
+.book-divider{height:1px;margin-top:8px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.25),transparent)}
 .spoiler-toggle{
-  width: 100%; display:flex; align-items:center; justify-content:center; gap:8px;
-  border: 0; background: transparent; color: var(--muted);
-  font-size: .92rem; padding: 10px 6px 8px; cursor: pointer;
+  width:100%;display:flex;align-items:center;justify-content:center;gap:8px;
+  border:0;background:transparent;color:var(--muted);
+  font-size:.92rem;padding:10px 6px 8px;cursor:pointer
 }
 .spoiler-toggle .chev{
-  width: 10px; height: 10px; display:inline-block;
-  border-right: 2px solid var(--muted);
-  border-bottom: 2px solid var(--muted);
-  transform: rotate(45deg); /* «раскрыть» */
-  transition: transform .25s ease, border-color .25s ease;
+  width:10px;height:10px;display:inline-block;border-right:2px solid var(--muted);
+  border-bottom:2px solid var(--muted);transform:rotate(45deg);
+  transition:transform .25s ease,border-color .25s ease
 }
-.spoiler-toggle[aria-expanded="true"] .chev{
-  transform: rotate(225deg); /* «свернуть» */
-}
+.spoiler-toggle[aria-expanded="true"] .chev{transform:rotate(225deg)}
 
-/* Содержимое спойлера — фикс закрытого состояния */
 .spoiler-content{
-  max-height: 0;
-  height: 0;
-  overflow: hidden;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transition: max-height .35s ease, opacity .35s ease, margin-top .35s ease;
-  will-change: max-height, opacity;
-  padding: 0 2px;
+  max-height:0;height:0;overflow:hidden;opacity:0;visibility:hidden;pointer-events:none;
+  transition:max-height .35s ease,opacity .35s ease,margin-top .35s ease;will-change:max-height,opacity;
+  padding:0 2px
 }
-.spoiler-content.open{
-  max-height: 280px;
-  height: auto;
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-  margin-top: 6px;
-}
-.reason{
-  font-size: .95rem; color: var(--text); opacity: .95; line-height: 1.45;
-  font-family: var(--font-serif);
-}
+.spoiler-content.open{max-height:280px;height:auto;opacity:1;visibility:visible;pointer-events:auto;margin-top:6px}
+.reason{font-size:.95rem;color:var(--text);opacity:.95;line-height:1.45;font-family:var(--font-serif)}
 
-/* Адаптив под узкие экраны */
-@media (max-width: 420px){
-  .book-inner{ grid-template-columns: 90px 1fr; gap: 10px; }
-  .book-title{ font-size: 1.02rem; }
-}
+/* Адаптив ширины колонки обложки */
+@media (max-width:420px){.book-inner{grid-template-columns:90px 1fr;gap:10px}.book-title{font-size:1.02rem}}
+@media (min-width:520px){.book-inner{grid-template-columns:130px 1fr}}
+@media (min-width:720px){.book-inner{grid-template-columns:150px 1fr}}
