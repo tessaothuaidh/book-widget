@@ -2,7 +2,7 @@
 const PAGE_SIZE = 5;
 const SHUFFLE_WINDOW_MS = 10 * 60 * 1000;
 
-// медиа-условие для мобильного обтекания
+// медиазапрос для мобильного обтекания
 const MOBILE_MQ = window.matchMedia('(max-width: 480px)');
 
 // === Утилиты ===
@@ -51,7 +51,7 @@ function createBookCard(book){
   // Базовая сетка
   const inner=document.createElement('div');inner.className='book-inner';
 
-  // Обложка (десктопный слот слева)
+  // Обложка (десктопная колонка слева)
   const coverBox=document.createElement('div');coverBox.className='book-cover';
   const img=document.createElement('img');
   img.loading='lazy';img.alt=`Обложка: ${book.title||'книга'}`;img.src=book.cover;
@@ -61,20 +61,47 @@ function createBookCard(book){
 
   // Контент
   const content=document.createElement('div');content.className='book-content';
-  if(book.title){const h3=document.createElement('div');h3.className='book-title';h3.textContent=book.title;content.appendChild(h3)}
-  if(book.annotation){const p=document.createElement('p');p.className='book-annotation';p.textContent=book.annotation;content.appendChild(p)}
-  if(book.readUrl){const a=document.createElement('a');a.className='read-btn';a.href=book.readUrl;a.target='_blank';a.rel='noopener';a.textContent='Читать';content.appendChild(a)}
+
+  if(book.title){
+    const h3=document.createElement('div');
+    h3.className='book-title';
+    h3.textContent=book.title;
+    content.appendChild(h3);
+  }
+  // Новое: автор
+  if(book.author){
+    const author=document.createElement('div');
+    author.className='book-author';
+    author.textContent=book.author;
+    content.appendChild(author);
+  }
+
+  if(book.annotation){
+    const p=document.createElement('p');
+    p.className='book-annotation';
+    p.textContent=book.annotation;
+    content.appendChild(p);
+  }
+  if(book.readUrl){
+    const a=document.createElement('a');
+    a.className='read-btn';
+    a.href=book.readUrl;
+    a.target='_blank';
+    a.rel='noopener';
+    a.textContent='Читать';
+    content.appendChild(a);
+  }
 
   // Мобильная компоновка: обложка внутрь контента + float
   if (MOBILE_MQ.matches) {
-    const floatCover = document.createElement('div');
-    floatCover.className = 'cover-float';
-    const img2 = img.cloneNode(true);
+    const floatCover=document.createElement('div');
+    floatCover.className='cover-float';
+    const img2=img.cloneNode(true);
     floatCover.appendChild(img2);
     content.prepend(floatCover);
     card.classList.add('mobile-flow');
   } else {
-    // Десктопная (две колонки)
+    // Десктопная: две колонки
     inner.appendChild(coverBox);
   }
 
@@ -119,7 +146,7 @@ function scrollTopSmooth(){rootEl?.scrollIntoView({behavior:'smooth',block:'star
 prevBtn.addEventListener('click',()=>{if(currentPage>1){currentPage-=1;render();scrollTopSmooth()}})
 nextBtn.addEventListener('click',()=>{if(currentPage<totalPages){currentPage+=1;render();scrollTopSmooth()}})
 
-// === Ререндер при смене ориентации/ширины (чтобы корректно переключать мобильную компоновку) ===
+// Переключение компоновки при изменении ширины/ориентации
 MOBILE_MQ.addEventListener?.('change',()=>{
   const keepPage=currentPage;
   render();
