@@ -163,3 +163,29 @@ html,body{margin:0;background:transparent;color:var(--text)}
 @media (max-width:420px){.book-inner{grid-template-columns:90px 1fr;gap:10px}.book-title{font-size:1.02rem}}
 @media (min-width:520px){.book-inner{grid-template-columns:130px 1fr}}
 @media (min-width:720px){.book-inner{grid-template-columns:150px 1fr}}
+
+/* === SINGLE: обтекание и на десктопе, фикс ширины === */
+.book-card.single-flow .book-inner{ display:block; }
+.book-card.single-flow .book-content{ display:block; }
+.book-card.single-flow .cover-float{
+  float:left;
+  width:180px;              /* фикс, чтобы не распухало */
+  aspect-ratio:2/3;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background:#082c39;
+  margin:2px 14px 10px 0;
+}
+.book-card.single-flow .cover-float img{
+  width:100%; height:auto; display:block;
+  object-fit: contain; object-position: center;
+}
+.book-card.single-flow .book-content::after{ content:""; display:block; clear:both; }
+
+/* На узких — мобильные размеры (как раньше) */
+@media (max-width: 480px){
+  .book-card.single-flow .cover-float{
+    width:34vw; max-width:120px; margin:2px 12px 8px 0;
+  }
+}
+
