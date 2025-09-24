@@ -83,6 +83,13 @@ function createBookCard(book) {
   img.loading = 'lazy';
   img.alt = `Обложка: ${book.title || 'книга'}`;
   img.src = book.cover;
+  // поддержка srcset/sizes, если заданы в books.json
+  if (book.srcset) img.setAttribute('srcset', book.srcset);
+  if (book.sizes)  img.setAttribute('sizes',  book.sizes);
+  // фокус кадра, если задан
+  if (typeof book.focalX === 'number' && typeof book.focalY === 'number') {
+    img.style.objectPosition = `${book.focalX}% ${book.focalY}%`;
+  }
   coverBox.appendChild(img);
 
   // Контент
@@ -119,7 +126,7 @@ function createBookCard(book) {
   spoilerBtn.type = 'button';
   spoilerBtn.className = 'spoiler-toggle';
   spoilerBtn.setAttribute('aria-expanded', 'false');
-  // 👇 стрелка + подпись
+  // стрелка + подпись
   spoilerBtn.innerHTML = `<span class="chev" aria-hidden="true"></span><span class="label">Тэсса рекомендует, потому что…</span>`;
 
   const spoiler = document.createElement('div');
@@ -138,10 +145,15 @@ function createBookCard(book) {
   card.appendChild(spoilerBtn);
   card.appendChild(spoiler);
 
-  // Логика спойлера
+  // Гарантируем закрытое состояние по умолчанию
+  spoiler.classList.remove('open');
+  spoilerBtn.setAttribute('aria-expanded','false');
+
+  // Логика спойлера (чёткий toggle по ARIA)
   spoilerBtn.addEventListener('click', () => {
-    const open = spoiler.classList.toggle('open');
-    spoilerBtn.setAttribute('aria-expanded', String(open));
+    const expanded = spoilerBtn.getAttribute('aria-expanded') === 'true';
+    spoilerBtn.setAttribute('aria-expanded', String(!expanded));
+    spoiler.classList.toggle('open', !expanded);
   });
 
   return card;
