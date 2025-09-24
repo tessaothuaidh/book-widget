@@ -57,10 +57,10 @@ html,body{margin:0;background:transparent;color:var(--text)}
   -webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none
 }
 
-/* Сетка карточки (дефолт: 2 колонки) */
+/* Сетка карточки (по умолчанию: 2 колонки) */
 .book-inner{display:grid;grid-template-columns:110px 1fr;gap:12px;align-items:stretch}
 
-/* ОБЛОЖКА — всегда целиком (десктопный режим в левой колонке) */
+/* Обложка — всегда целиком */
 .book-cover{
   position:relative;width:100%;aspect-ratio:2/3;border-radius:var(--radius);
   overflow:hidden;background:#082c39
@@ -73,6 +73,14 @@ html,body{margin:0;background:transparent;color:var(--text)}
 /* Контент */
 .book-content{display:flex;flex-direction:column;gap:8px;min-height:140px}
 .book-title{font-family:var(--font-display);font-weight:400;font-size:1.1rem;letter-spacing:.2px}
+
+/* Новая строка: Автор */
+.book-author{
+  font-size:.9rem;
+  color:var(--muted);
+  margin-top:-4px;   /* ближе к заголовку */
+  margin-bottom:4px;
+}
 
 /* Теги */
 .book-tags{display:flex;align-items:center;justify-content:center;gap:6px;margin:2px 0 4px}
@@ -115,31 +123,40 @@ html,body{margin:0;background:transparent;color:var(--text)}
 
 /* ===== МОБИЛЬНОЕ ОБТЕКАНИЕ ТЕКСТОМ (≤480px) ===== */
 @media (max-width: 480px){
-  .book-card.mobile-flow .book-inner{display:block}              /* отключаем grid */
-  .book-card.mobile-flow .book-content{display:block}           /* обычный поток */
+  .book-card.mobile-flow .book-inner{display:block}
+  .book-card.mobile-flow .book-content{display:block}
 
   /* плавающая обложка слева */
   .book-card.mobile-flow .cover-float{
-    float:left;
-    width:34vw;
-    max-width:120px;
-    aspect-ratio:2/3;
-    border-radius:var(--radius);
-    overflow:hidden;
-    background:#082c39;
-    margin:2px 12px 8px 0;
+    float:left;width:34vw;max-width:120px;aspect-ratio:2/3;border-radius:var(--radius);
+    overflow:hidden;background:#082c39;margin:2px 12px 8px 0;
   }
-  /* ВАЖНО: картинка без absolute — естественная высота */
+  /* картинка без absolute — естественная высота */
   .book-card.mobile-flow .cover-float img{
-    width:100%;
-    height:auto;
-    display:block;
-    object-fit:contain;
-    object-position:center;
-    image-rendering:auto;
+    width:100%;height:auto;display:block;object-fit:contain;object-position:center;image-rendering:auto;
   }
   /* clearfix, чтобы контейнер учитывал высоту плавающего блока */
   .book-card.mobile-flow .book-content::after{content:"";display:block;clear:both}
+}
+
+/* ===== МОБИЛЬНЫЕ ПРАВКИ ДЛЯ ТЕГОВ И КНОПКИ ===== */
+@media (max-width: 480px){
+  /* Перенос по чипам, без переноса внутри чипа, центрирование */
+  .book-tags{
+    display:flex;
+    flex-wrap:wrap;           /* перенос строк разрешён */
+    justify-content:center;   /* центрируем каждую строку */
+    gap:6px 8px;              /* вертикальный и горизонтальный зазор */
+    padding:0 6px;
+    max-width:100%;
+  }
+  .tag{
+    white-space:nowrap;       /* чип целиком, без разрыва слова */
+    flex:0 0 auto;
+  }
+
+  /* Отступ над кнопкой «Читать» */
+  .read-btn{ margin-top:8px; }
 }
 
 /* Адаптив ширины левой колонки (для десктопной сетки) */
