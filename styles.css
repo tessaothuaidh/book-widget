@@ -82,7 +82,7 @@ html,body{margin:0;background:transparent;color:var(--text)}
 /* Аннотация */
 .book-annotation{font-family:var(--font-serif);font-size:.98rem;color:var(--text);opacity:.95;line-height:1.5}
 
-/* Кнопка «Читать» — градиент */
+/* Кнопка «Читать» */
 .read-btn{
   align-self:flex-start;appearance:none;border:0;border-radius:var(--radius);
   padding:10px 16px;background:linear-gradient(135deg,var(--accent1),var(--accent2));
@@ -105,12 +105,26 @@ html,body{margin:0;background:transparent;color:var(--text)}
   transition:transform .25s ease,border-color .25s ease
 }
 .spoiler-toggle[aria-expanded="true"] .chev{transform:rotate(225deg)}
+
 .spoiler-content{
-  max-height:0;height:0;overflow:hidden;opacity:0;visibility:hidden;pointer-events:none;
-  transition:max-height .35s ease,opacity .35s ease,margin-top .35s ease;will-change:max-height,opacity;
-  padding:0 2px
+  max-height:0;
+  height:auto;
+  overflow:hidden;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transition:max-height .35s ease,opacity .35s ease,margin-top .35s ease;
+  will-change:max-height,opacity;
+  padding:0 2px;
 }
-.spoiler-content.open{max-height:280px;height:auto;opacity:1;visibility:visible;pointer-events:auto;margin-top:6px}
+.spoiler-content.open{
+  max-height:none;      /* убрали ограничение по высоте */
+  height:auto;
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+  margin-top:6px;
+}
 .reason{font-size:.95rem;color:var(--text);opacity:.95;line-height:1.45;font-family:var(--font-serif)}
 
 /* ===== Узкие контейнеры (≤760px): включаем обтекание текстом ===== */
@@ -127,13 +141,10 @@ html,body{margin:0;background:transparent;color:var(--text)}
   }
   .book-card.flow .book-content::after{content:"";display:block;clear:both}
 
-  /* Теги: перенос по «чипам», центрирование */
   .book-tags{
     display:flex;flex-wrap:wrap;justify-content:center;gap:6px 8px;padding:0 6px;max-width:100%;
   }
   .tag{white-space:nowrap;flex:0 0 auto}
-
-  /* Отступ над кнопкой «Читать», чтобы аннотация не прилипала */
   .read-btn{margin-top:8px}
 }
 
