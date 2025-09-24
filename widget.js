@@ -2,6 +2,9 @@
 const PAGE_SIZE = 5;
 const SHUFFLE_WINDOW_MS = 10 * 60 * 1000;
 
+// медиа-условие для мобильного обтекания
+const MOBILE_MQ = window.matchMedia('(max-width: 480px)');
+
 // === Утилиты ===
 function mulberry32(seed){return function(){let t=seed+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
 function shuffleDeterministic(arr,seed){const rng=mulberry32(seed);const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
@@ -45,10 +48,10 @@ function createBookCard(book){
     const chip=document.createElement('span');chip.className='tag';chip.textContent=t;tagsWrap.appendChild(chip);
   });
 
-  // Сетка
+  // Сетка (дефолт)
   const inner=document.createElement('div');inner.className='book-inner';
 
-  // Обложка (всегда целиком)
+  // Обложка (варианты: обычная в левой колонке ИЛИ мобильная float внутри контента)
   const coverBox=document.createElement('div');coverBox.className='book-cover';
   const img=document.createElement('img');
   img.loading='lazy';img.alt=`Обложка: ${book.title||'книга'}`;img.src=book.cover;
@@ -62,6 +65,21 @@ function createBookCard(book){
   if(book.annotation){const p=document.createElement('p');p.className='book-annotation';p.textContent=book.annotation;content.appendChild(p)}
   if(book.readUrl){const a=document.createElement('a');a.className='read-btn';a.href=book.readUrl;a.target='_blank';a.rel='noopener';a.textContent='Читать';content.appendChild(a)}
 
+  // На мобильном — переносим обложку ВНУТРЬ контента и даём ей float
+  if (MOBILE_MQ.matches) {
+    const floatCover = document.createElement('div');
+    floatCover.className = 'cover-float';
+    const img2 = img.cloneNode(true);
+    floatCover.appendChild(img2);
+    content.prepend(floatCover);
+    card.classList.add('mobile-flow');
+  } else {
+    // Десктопная компоновка 2 колонки
+    inner.appendChild(coverBox);
+  }
+
+  inner.appendChild(content);
+
   // Спойлер
   const divider=document.createElement('div');divider.className='book-divider';
   const spoilerBtn=document.createElement('button');spoilerBtn.type='button';spoilerBtn.className='spoiler-toggle';
@@ -70,9 +88,12 @@ function createBookCard(book){
   const spoiler=document.createElement('div');spoiler.className='spoiler-content';
   const reason=document.createElement('div');reason.className='reason';reason.textContent=book.reason||'';spoiler.appendChild(reason);
 
-  // Сборка
-  inner.appendChild(coverBox);inner.appendChild(content);
-  card.appendChild(tagsWrap);card.appendChild(inner);card.appendChild(divider);card.appendChild(spoilerBtn);card.appendChild(spoiler);
+  // Сборка карточки
+  card.appendChild(tagsWrap);
+  card.appendChild(inner);
+  card.appendChild(divider);
+  card.appendChild(spoilerBtn);
+  card.appendChild(spoiler);
 
   // Спойлер закрыт по умолчанию
   spoiler.classList.remove('open');spoilerBtn.setAttribute('aria-expanded','false');
