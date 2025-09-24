@@ -74,11 +74,11 @@ html,body{margin:0;background:transparent;color:var(--text)}
 .book-content{display:flex;flex-direction:column;gap:8px;min-height:140px}
 .book-title{font-family:var(--font-display);font-weight:400;font-size:1.1rem;letter-spacing:.2px}
 
-/* Новая строка: Автор */
+/* Автор */
 .book-author{
   font-size:.9rem;
   color:var(--muted);
-  margin-top:-4px;   /* ближе к заголовку */
+  margin-top:-4px;
   margin-bottom:4px;
 }
 
@@ -126,37 +126,28 @@ html,body{margin:0;background:transparent;color:var(--text)}
   .book-card.mobile-flow .book-inner{display:block}
   .book-card.mobile-flow .book-content{display:block}
 
-  /* плавающая обложка слева */
   .book-card.mobile-flow .cover-float{
     float:left;width:34vw;max-width:120px;aspect-ratio:2/3;border-radius:var(--radius);
     overflow:hidden;background:#082c39;margin:2px 12px 8px 0;
   }
-  /* картинка без absolute — естественная высота */
   .book-card.mobile-flow .cover-float img{
     width:100%;height:auto;display:block;object-fit:contain;object-position:center;image-rendering:auto;
   }
-  /* clearfix, чтобы контейнер учитывал высоту плавающего блока */
   .book-card.mobile-flow .book-content::after{content:"";display:block;clear:both}
 }
 
 /* ===== МОБИЛЬНЫЕ ПРАВКИ ДЛЯ ТЕГОВ И КНОПКИ ===== */
 @media (max-width: 480px){
-  /* Перенос по чипам, без переноса внутри чипа, центрирование */
   .book-tags{
     display:flex;
-    flex-wrap:wrap;           /* перенос строк разрешён */
-    justify-content:center;   /* центрируем каждую строку */
-    gap:6px 8px;              /* вертикальный и горизонтальный зазор */
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:6px 8px;
     padding:0 6px;
     max-width:100%;
   }
-  .tag{
-    white-space:nowrap;       /* чип целиком, без разрыва слова */
-    flex:0 0 auto;
-  }
-
-  /* Отступ над кнопкой «Читать» */
-  .read-btn{ margin-top:8px; }
+  .tag{white-space:nowrap;flex:0 0 auto}
+  .read-btn{margin-top:8px}
 }
 
 /* Адаптив ширины левой колонки (для десктопной сетки) */
@@ -164,28 +155,32 @@ html,body{margin:0;background:transparent;color:var(--text)}
 @media (min-width:520px){.book-inner{grid-template-columns:130px 1fr}}
 @media (min-width:720px){.book-inner{grid-template-columns:150px 1fr}}
 
-/* === SINGLE: обтекание и на десктопе, фикс ширины === */
-.book-card.single-flow .book-inner{ display:block; }
-.book-card.single-flow .book-content{ display:block; }
+/* ===== SINGLE: обтекание и фикс ширины на десктопе ===== */
+.book-card.single-flow .book-inner{display:block}
+.book-card.single-flow .book-content{display:block}
+
+/* на всякий случай: левую колонку в single прячем, чтобы ничего не «разъезжалось» */
+.book-card.single-flow .book-cover{display:none !important}
+
+/* десктопная ширина float-обложки в single */
 .book-card.single-flow .cover-float{
   float:left;
-  width:180px;              /* фикс, чтобы не распухало */
+  width:180px;              /* жёсткий фикс */
+  max-width:180px;
   aspect-ratio:2/3;
-  border-radius: var(--radius);
-  overflow: hidden;
+  border-radius:var(--radius);
+  overflow:hidden;
   background:#082c39;
   margin:2px 14px 10px 0;
 }
 .book-card.single-flow .cover-float img{
-  width:100%; height:auto; display:block;
-  object-fit: contain; object-position: center;
+  width:100%;height:auto;display:block;object-fit:contain;object-position:center
 }
-.book-card.single-flow .book-content::after{ content:""; display:block; clear:both; }
+.book-card.single-flow .book-content::after{content:"";display:block;clear:both}
 
-/* На узких — мобильные размеры (как раньше) */
-@media (max-width: 480px){
+/* мобильная ширина для single */
+@media (max-width:480px){
   .book-card.single-flow .cover-float{
-    width:34vw; max-width:120px; margin:2px 12px 8px 0;
+    width:34vw;max-width:120px;margin:2px 12px 8px 0;
   }
 }
-
