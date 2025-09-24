@@ -1,17 +1,11 @@
 // === Настройки ===
-const SHUFFLE_WINDOW_MS = 10 * 60 * 1000; // каждые 10 минут новый порядок
-const MOBILE_MQ = window.matchMedia('(max-width: 480px)');
+const SHUFFLE_WINDOW_MS = 10 * 60 * 1000; // перестановка каждые 10 мин
+const FLOW_MQ = window.matchMedia('(max-width: 760px)'); // порог «узкого» контейнера
 
-// Режимы и параметры из URL/DOM
-const params = new URLSearchParams(window.location.search);
+// Кол-во карточек: из data-page-size или дефолт 5
 const rootEl = document.getElementById('widget-root');
-const SINGLE_MODE  = params.has('single')  || rootEl?.dataset.mode === 'single';
-const COMPACT_MODE = params.has('compact') || rootEl?.dataset.compact === '1';
-
-// Если задано data-page-size, используем его (кроме single)
-const DATA_PAGE_SIZE   = parseInt(rootEl?.dataset.pageSize || '', 10);
-const DEFAULT_PAGE_SIZE = Number.isFinite(DATA_PAGE_SIZE) && DATA_PAGE_SIZE > 0 ? DATA_PAGE_SIZE : 2;
-const PAGE_SIZE = SINGLE_MODE ? 1 : DEFAULT_PAGE_SIZE;
+const DATA_PAGE_SIZE = parseInt(rootEl?.dataset.pageSize || '', 10);
+const PAGE_SIZE = Number.isFinite(DATA_PAGE_SIZE) && DATA_PAGE_SIZE > 0 ? DATA_PAGE_SIZE : 2;
 
 // === Утилиты ===
 function mulberry32(seed){
@@ -37,24 +31,18 @@ function getTimeWindowSeed(){ return Math.floor(Date.now() / SHUFFLE_WINDOW_MS);
 let rawBooks = [];
 let viewBooks = [];
 let currentPage = 1;
-let totalPages  = 1;
+let totalPages = 1;
 let currentWindowSeed = getTimeWindowSeed();
 
 // === Элементы ===
-const listEl        = document.getElementById('books-list');
-const prevBtn       = document.getElementById('prevBtn');
-const nextBtn       = document.getElementById('nextBtn');
+const listEl = document.getElementById('books-list');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
 const pageIndicator = document.getElementById('pageIndicator');
-const pagerEl       = document.querySelector('.pager');
-
-// Прячем пагинацию и маркируем root в single
-if (SINGLE_MODE && pagerEl) pagerEl.style.display = 'none';
-if (SINGLE_MODE && rootEl) rootEl.dataset.mode = 'single';
 
 // === Рендер ===
 function render(){
   totalPages = Math.max(1, Math.ceil(viewBooks.length / PAGE_SIZE));
-  if (SINGLE_MODE) totalPages = 1;
   if (currentPage > totalPages) currentPage = totalPages;
 
   const start = (currentPage - 1) * PAGE_SIZE;
@@ -64,17 +52,14 @@ function render(){
   listEl.innerHTML = '';
   for (const b of pageItems) listEl.appendChild(createBookCard(b));
 
-  if (!SINGLE_MODE && prevBtn && nextBtn && pageIndicator){
-    prevBtn.disabled = currentPage <= 1;
-    nextBtn.disabled = currentPage >= totalPages;
-    pageIndicator.textContent = `${currentPage} / ${totalPages}`;
-  }
+  prevBtn.disabled = currentPage <= 1;
+  nextBtn.disabled = currentPage >= totalPages;
+  pageIndicator.textContent = `${currentPage} / ${totalPages}`;
 }
 
 function createBookCard(book){
   const card = document.createElement('article');
   card.className = 'book-card';
-  if (SINGLE_MODE) card.classList.add('single-flow'); // включаем десктопное обтекание
 
   // Теги
   const tagsWrap = document.createElement('div');
@@ -90,7 +75,7 @@ function createBookCard(book){
   const inner = document.createElement('div');
   inner.className = 'book-inner';
 
-  // Обложка (для режима 2 колонок)
+  // Обложка (для широких экранов — отдельная левая колонка)
   const coverBox = document.createElement('div');
   coverBox.className = 'book-cover';
   const img = document.createElement('img');
@@ -117,19 +102,12 @@ function createBookCard(book){
     author.textContent = book.author;
     content.appendChild(author);
   }
-
-  // Аннотация (в compact — подрезаем)
-  let annotationText = book.annotation || '';
-  if (SINGLE_MODE && COMPACT_MODE && annotationText.length > 700){
-    annotationText = annotationText.slice(0, 700).trimEnd() + '…';
-  }
-  if (annotationText){
+  if (book.annotation){
     const p = document.createElement('p');
     p.className = 'book-annotation';
-    p.textContent = annotationText;
+    p.textContent = book.annotation;
     content.appendChild(p);
   }
-
   if (book.readUrl){
     const a = document.createElement('a');
     a.className = 'read-btn';
@@ -140,43 +118,17 @@ function createBookCard(book){
     content.appendChild(a);
   }
 
-  // Компоновка
-  if (SINGLE_MODE) {
-    // Всегда float внутрь контента + инлайн-фикс размеров (защита от «распухания»)
-    const floatCover = document.createElement('div');
-    floatCover.className = 'cover-float';
-    if (window.matchMedia('(max-width:480px)').matches) {
-      floatCover.style.width = '34vw';
-      floatCover.style.maxWidth = '120px';
-      floatCover.style.margin = '2px 12px 8px 0';
-    } else {
-      floatCover.style.width = '180px';
-      floatCover.style.maxWidth = '180px';
-      floatCover.style.margin = '2px 14px 10px 0';
-    }
-    floatCover.style.aspectRatio = '2 / 3';
-    floatCover.style.float = 'left';
-    floatCover.style.borderRadius = 'var(--radius)';
-    floatCover.style.overflow = 'hidden';
-    floatCover.style.background = '#082c39';
-
-    const img2 = img.cloneNode(true);
-    img2.style.width = '100%';
-    img2.style.height = 'auto';
-    img2.style.display = 'block';
-    floatCover.appendChild(img2);
-
-    content.prepend(floatCover);
-  } else if (MOBILE_MQ.matches) {
-    // На мобильных — тоже float внутрь контента
+  // Компоновка:
+  // — на узких (≤760px) делаем обтекание: вставляем «плавающую» обложку внутрь контента;
+  // — на широких оставляем двухколоночную сетку.
+  if (FLOW_MQ.matches) {
     const floatCover = document.createElement('div');
     floatCover.className = 'cover-float';
     const img2 = img.cloneNode(true);
     floatCover.appendChild(img2);
     content.prepend(floatCover);
-    card.classList.add('mobile-flow');
+    card.classList.add('flow');
   } else {
-    // Десктоп (две колонки)
     inner.appendChild(coverBox);
   }
 
@@ -189,7 +141,7 @@ function createBookCard(book){
   spoilerBtn.type = 'button';
   spoilerBtn.className = 'spoiler-toggle';
   spoilerBtn.setAttribute('aria-expanded', 'false');
-  spoilerBtn.innerHTML = `<span class="chev" aria-hidden="true"></span><span class="label">Я рекомендую, потому что…</span>`;
+  spoilerBtn.innerHTML = `<span class="chev" aria-hidden="true"></span><span class="label">Тэсса рекомендует, потому что…</span>`;
   const spoiler = document.createElement('div');
   spoiler.className = 'spoiler-content';
   const reason  = document.createElement('div');
@@ -197,31 +149,21 @@ function createBookCard(book){
   reason.textContent = book.reason || '';
   spoiler.appendChild(reason);
 
-  // В компактном single-режиме спойлер можно скрыть для стабильной высоты
-  const hideSpoiler = SINGLE_MODE && COMPACT_MODE;
-
-  // Сборка карточки
+  // Сборка
   card.appendChild(tagsWrap);
   card.appendChild(inner);
-  if (!hideSpoiler){
-    card.appendChild(divider);
-    card.appendChild(spoilerBtn);
-    card.appendChild(spoiler);
+  card.appendChild(divider);
+  card.appendChild(spoilerBtn);
+  card.appendChild(spoiler);
 
-    // Спойлер закрыт по умолчанию
-    spoiler.classList.remove('open');
-    spoilerBtn.setAttribute('aria-expanded','false');
-    spoilerBtn.addEventListener('click',()=>{
-      const expanded = spoilerBtn.getAttribute('aria-expanded') === 'true';
-      spoilerBtn.setAttribute('aria-expanded', String(!expanded));
-      spoiler.classList.toggle('open', !expanded);
-    });
-  } else {
-    // небольшой отступ снизу, чтобы карточка «дышала»
-    const spacer = document.createElement('div');
-    spacer.style.height = '8px';
-    card.appendChild(spacer);
-  }
+  // Спойлер поведение
+  spoiler.classList.remove('open');
+  spoilerBtn.setAttribute('aria-expanded','false');
+  spoilerBtn.addEventListener('click',()=>{
+    const expanded = spoilerBtn.getAttribute('aria-expanded') === 'true';
+    spoilerBtn.setAttribute('aria-expanded', String(!expanded));
+    spoiler.classList.toggle('open', !expanded);
+  });
 
   return card;
 }
@@ -230,7 +172,6 @@ function createBookCard(book){
 function applyShuffle(){
   const seed = getTimeWindowSeed() ^ 0x9E3779B9;
   viewBooks = shuffleDeterministic(rawBooks, seed);
-  if (SINGLE_MODE) viewBooks = viewBooks.slice(0, 1); // жёстко 1 карточка
 }
 async function loadData(){
   const res = await fetch('./books.json', { cache: 'no-store' });
@@ -240,15 +181,15 @@ async function loadData(){
   render();
 }
 
-// === Пагинация (в single не нужна) ===
-function scrollTopSmooth(){ rootEl?.scrollIntoView({ behavior:'smooth', block:'start' }); }
-if (!SINGLE_MODE && prevBtn && nextBtn){
-  prevBtn.addEventListener('click',()=>{ if (currentPage > 1){ currentPage -= 1; render(); scrollTopSmooth(); }});
-  nextBtn.addEventListener('click',()=>{ if (currentPage < totalPages){ currentPage += 1; render(); scrollTopSmooth(); }});
+// === Пагинация ===
+function scrollTopSmooth(){
+  rootEl?.scrollIntoView({ behavior:'smooth', block:'start' });
 }
+prevBtn.addEventListener('click',()=>{ if (currentPage > 1){ currentPage -= 1; render(); scrollTopSmooth(); }});
+nextBtn.addEventListener('click',()=>{ if (currentPage < totalPages){ currentPage += 1; render(); scrollTopSmooth(); }});
 
-// Переключение компоновки при изменении ширины/ориентации
-MOBILE_MQ.addEventListener?.('change', ()=>{
+// Перестраиваем карточки при смене ширины (обтекание ↔ 2 колонки)
+FLOW_MQ.addEventListener?.('change', ()=>{
   const keepPage = currentPage;
   render();
   currentPage = Math.min(keepPage, Math.max(1, Math.ceil(viewBooks.length / PAGE_SIZE)));
