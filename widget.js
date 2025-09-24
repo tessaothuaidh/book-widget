@@ -189,7 +189,7 @@ function createBookCard(book){
   spoilerBtn.type = 'button';
   spoilerBtn.className = 'spoiler-toggle';
   spoilerBtn.setAttribute('aria-expanded', 'false');
-  spoilerBtn.innerHTML = `<span class="chev" aria-hidden="true"></span><span class="label">Тэсса рекомендует, потому что…</span>`;
+  spoilerBtn.innerHTML = `<span class="chev" aria-hidden="true"></span><span class="label">Я рекомендую, потому что…</span>`;
   const spoiler = document.createElement('div');
   spoiler.className = 'spoiler-content';
   const reason  = document.createElement('div');
