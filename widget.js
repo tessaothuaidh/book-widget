@@ -25,7 +25,7 @@ function mulberry32(seed){
 function shuffleDeterministic(arr, seed){
   const rng = mulberry32(seed);
   const a = arr.slice();
-  for(let i = a.length - 1; i > 0; i--){
+  for (let i = a.length - 1; i > 0; i--){
     const j = Math.floor(rng() * (i + 1));
     [a[i], a[j]] = [a[j], a[i]];
   }
@@ -47,12 +47,14 @@ const nextBtn = document.getElementById('nextBtn');
 const pageIndicator = document.getElementById('pageIndicator');
 const pagerEl = document.querySelector('.pager');
 
-// Прячем пагинацию в одиночном режиме
+// Прячем пагинацию в одиночном режиме + пометим root для CSS (на всякий случай)
 if (SINGLE_MODE && pagerEl) pagerEl.style.display = 'none';
+if (SINGLE_MODE && rootEl) rootEl.dataset.mode = 'single';
 
 // === Рендер ===
 function render(){
   totalPages = Math.max(1, Math.ceil(viewBooks.length / PAGE_SIZE));
+  if (SINGLE_MODE) totalPages = 1;
   if (currentPage > totalPages) currentPage = totalPages;
 
   const start = (currentPage - 1) * PAGE_SIZE;
@@ -108,7 +110,6 @@ function createBookCard(book){
     h3.textContent = book.title;
     content.appendChild(h3);
   }
-  // Автор (новое поле)
   if (book.author){
     const author = document.createElement('div');
     author.className = 'book-author';
@@ -140,7 +141,6 @@ function createBookCard(book){
     content.prepend(floatCover);
     card.classList.add('mobile-flow');
   } else {
-    // Десктопная: две колонки
     inner.appendChild(coverBox);
   }
 
@@ -171,7 +171,7 @@ function createBookCard(book){
   // Спойлер закрыт по умолчанию
   spoiler.classList.remove('open');
   spoilerBtn.setAttribute('aria-expanded','false');
-  spoilerBtn.addEventListener('click',()=>{
+  spoilerBtn.addEventListener('click', () => {
     const expanded = spoilerBtn.getAttribute('aria-expanded') === 'true';
     spoilerBtn.setAttribute('aria-expanded', String(!expanded));
     spoiler.classList.toggle('open', !expanded);
@@ -184,6 +184,8 @@ function createBookCard(book){
 function applyShuffle(){
   const seed = getTimeWindowSeed() ^ 0x9E3779B9;
   viewBooks = shuffleDeterministic(rawBooks, seed);
+  // Жёстко ограничим список одной карточкой в single-режиме
+  if (SINGLE_MODE) viewBooks = viewBooks.slice(0, 1);
 }
 async function loadData(){
   const res = await fetch('./books.json', { cache: 'no-store' });
