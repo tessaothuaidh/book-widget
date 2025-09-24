@@ -1,216 +1,168 @@
 /* =========
-   БАЗОВЫЕ ПЕРЕМЕННЫЕ (подгони под стиль Taplink)
+   СТИЛЬ ТВОЕЙ СТРАНИЦЫ TAPLINK
    ========= */
+@import url("https://fonts.googleapis.com/css2?family=Amarante&display=swap");
+
 :root{
-  --bg: #0B0F14;
-  --card: rgba(255,255,255,0.05);       /* полупрозрачный фон карточки */
-  --text: #E8F0F2;
-  --muted: #A7B0B3;
-  --accent1: #048284;                    /* твой фирменный */
-  --accent2: #6FE3E5;                    /* второй для градиента */
-  --radius: 16px;
-  --shadow: 0 8px 28px rgba(0,0,0,.35);
+  /* Палитра из темы Taplink */
+  --bg: #002343;        /* общий фон страницы */
+  --panel: #0e3343;     /* цвет панелей/блоков */
+  --panel-alpha: rgba(14, 51, 67, 0.92);
+  --text: #ffffff;
+  --muted: #cfe6ee;
+
+  /* Акценты и градиенты */
+  --accent1: #048384;
+  --accent2: #044a64;
+  --accent3: #041436;   /* глубокая тень/край градиента */
+
+  /* Доп. акцент (фэнтези-золото из твоих блоков) */
+  --gold: #e8d892;
+
+  /* Кнопки (в духе ссылки/кнопок в теме) */
+  --btn-bg: #ffffff;
+  --btn-text: #0b0f14;
+
+  /* UI */
+  --radius-s: 10px;
+  --radius: 12px;
+  --radius-l: 16px;
+  --shadow: 0 10px 28px rgba(4, 131, 132, .22);
+
+  /* Шрифты */
+  --font-display: "Amarante", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+  --font-base: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+  --font-serif: Georgia, "Times New Roman", serif;
+
+  /* Чипы/теги */
   --chip-bg: rgba(255,255,255,0.06);
   --chip-text: #d7e4e6;
-  --btn: #E8F0F2;
-  --btn-text: #0B0F14;
-
-  --font-base: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
-  --font-serif: Georgia, "Times New Roman", serif; /* для аннотаций, если хочешь */
 }
 
 /* =========
    ГЛОБАЛ
    ========= */
 * { box-sizing: border-box; }
-html, body {
-  margin: 0;
-  background: transparent;  /* чтобы вписаться в Taplink через iframe */
-  color: var(--text);
-  font-family: var(--font-base);
-}
-#widget-root { padding: 8px; }
-
-/* Скрыть визуально, но оставить для скринридеров */
-.sr-only{
-  position:absolute!important; width:1px; height:1px; padding:0; margin:-1px;
-  overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
-}
+html, body { margin: 0; background: transparent; color: var(--text); }
+#widget-root { padding: 8px; background: transparent; font-family: var(--font-base); }
+.sr-only{ position:absolute!important; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
 
 /* =========
    ПАГИНАЦИЯ
    ========= */
 .pager{
-  display:flex; align-items:center; justify-content:center; gap:10px;
+  display:flex; align-items:center; justify-content:center; gap:12px;
   margin: 16px 0 8px;
 }
 .pager-btn{
-  background: var(--chip-bg);
+  background: linear-gradient(#002343,#002343) padding-box,
+              linear-gradient(135deg, var(--accent1), var(--accent2)) border-box;
+  border: 2px solid transparent;
   color: var(--text);
-  border: 0;
-  border-radius: 10px;
-  padding: 8px 12px;
+  border-radius: var(--radius);
+  padding: 8px 14px;
   cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: transform .12s ease, opacity .2s ease;
 }
-.pager-btn:disabled{ opacity:.4; cursor: default; }
-.pager-indicator{ color: var(--muted); font-size: .95rem; }
+.pager-btn:active{ transform: scale(.98) }
+.pager-btn:disabled{ opacity:.45; cursor: default; box-shadow: none; }
+.pager-indicator{ color: var(--chip-text); font-size: .95rem; }
 
 /* =========
    СПИСОК КНИГ
    ========= */
-#books-list{
-  display: grid;
-  gap: 12px;
-}
+#books-list{ display: grid; gap: 12px; }
 
-/* Карточка с градиентной рамкой */
+/* Карточка с градиентной рамкой (как на твоих виджетах Taplink) */
 .book-card{
   position: relative;
-  border-radius: var(--radius);
-  background: var(--card);
+  border-radius: var(--radius-l);
+  background: var(--panel-alpha);
   box-shadow: var(--shadow);
   overflow: hidden;
   padding: 12px;
 }
-
-/* Градиентная рамка через маску */
 .book-card::before{
   content:"";
   position:absolute; inset:0;
-  padding: 1px; /* толщина рамки */
+  padding: 2px; /* толщина рамки */
   border-radius: inherit;
-  background: linear-gradient(135deg, var(--accent1), var(--accent2));
-  -webkit-mask: 
-      linear-gradient(#000 0 0) content-box, 
-      linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-          mask-composite: exclude;
+  background: linear-gradient(135deg, var(--accent1), var(--accent2), var(--accent3));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
   pointer-events:none;
 }
 
-/* Внутренний грид карточки: слева обложка, справа текст */
+/* Внутренний грид: слева обложка, справа контент */
 .book-inner{
   display: grid;
   grid-template-columns: 110px 1fr;
   gap: 12px;
   align-items: stretch;
 }
+.book-cover{ width: 100%; height: 100%; border-radius: var(--radius); overflow: hidden; background: #0003; }
+.book-cover img{ width: 100%; height: 100%; object-fit: cover; display:block; }
 
-/* Обложка */
-.book-cover{
-  width: 100%;
-  height: 100%;
-  border-radius: 10px;
-  overflow: hidden;
-  background: #0003;
-}
-.book-cover img{
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display:block;
+/* Контент */
+.book-content{ display: flex; flex-direction: column; gap: 8px; min-height: 140px; }
+.book-title{
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 1.1rem;
+  letter-spacing:.2px;
 }
 
-/* Контент справа */
-.book-content{
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-height: 140px;
-}
-
-/* Теги сверху, по центру */
+/* Теги сверху, по центру — «ненавязчивые» */
 .book-tags{
   display:flex; align-items:center; justify-content:center; gap:6px;
-  margin-top: 2px;
+  margin: 2px 0 4px;
 }
 .tag{
-  font-size: .8rem;
-  padding: 4px 8px;
-  border-radius: 999px;
-  background: var(--chip-bg);
-  color: var(--chip-text);
-  white-space: nowrap;
+  font-size: .8rem; padding: 4px 8px; border-radius: 999px;
+  background: var(--chip-bg); color: var(--chip-text); white-space: nowrap;
 }
 
-/* Заголовок (если нужен) */
-.book-title{
-  font-weight: 700;
-  font-size: 1.05rem;
-  line-height: 1.3;
-}
-
-/* Аннотация */
+/* Аннотация — как на странице (Georgia) */
 .book-annotation{
   font-family: var(--font-serif);
   font-size: .98rem;
   color: var(--text);
   opacity: .95;
+  line-height: 1.5;
 }
 
-/* Кнопка "Читать" */
+/* Кнопка «Читать» — светлая как CTA */
 .read-btn{
   align-self: flex-start;
-  appearance: none;
-  border: 0;
-  border-radius: 12px;
+  appearance: none; border: 0; border-radius: var(--radius);
   padding: 10px 14px;
-  background: var(--btn);
+  background: var(--btn-bg);
   color: var(--btn-text);
-  font-weight: 600;
-  cursor: pointer;
-  text-decoration: none;
+  font-weight: 700; letter-spacing:.2px;
+  cursor: pointer; text-decoration: none;
+  box-shadow: var(--shadow);
+  transition: transform .12s ease;
 }
+.read-btn:active{ transform: translateY(1px) }
 
-/* Разделитель перед спойлером (тонкая линия) */
+/* Тонкий разделитель перед спойлером */
 .book-divider{
-  height: 1px;
+  height: 1px; margin-top: 8px;
   background: linear-gradient(90deg, transparent, rgba(255,255,255,.25), transparent);
-  margin-top: 8px;
 }
 
-/* Кнопка-спойлер (тонкая, на всю ширину) */
+/* Кнопка-спойлер с иконкой-стрелкой */
 .spoiler-toggle{
-  width: 100%;
-  border: 0;
-  background: transparent;
-  color: var(--muted);
-  font-size: .92rem;
-  padding: 10px 6px 8px;
-  text-align: center;
-  cursor: pointer;
+  width: 100%; display:flex; align-items:center; justify-content:center; gap:8px;
+  border: 0; background: transparent; color: var(--muted);
+  font-size: .92rem; padding: 10px 6px 8px; cursor: pointer;
 }
-
-/* Скрытый блок спойлера */
-.spoiler-content{
-  max-height: 0;
-  overflow: hidden;
-  opacity: 0;
-  transition: max-height .35s ease, opacity .35s ease;
-  will-change: max-height, opacity;
-  padding: 0 2px;
+.spoiler-toggle .chev{
+  width: 10px; height: 10px; display:inline-block;
+  border-right: 2px solid var(--muted);
+  border-bottom: 2px solid var(--muted);
+  transform: rotate(45deg); /* стрелка вниз-вправо (как «раскрыть») */
+  transition: transform .25s ease, border-color .25s ease;
 }
-
-/* Когда открыт */
-.spoiler-content.open{
-  max-height: 240px; /* достаточно для 6-8 строк; при желании увеличь */
-  opacity: 1;
-  margin-top: 6px;
-}
-
-/* Текст в спойлере */
-.reason{
-  font-size: .95rem;
-  color: var(--text);
-  opacity: .95;
-  line-height: 1.45;
-}
-
-/* Адаптив под узкие экраны */
-@media (max-width: 420px){
-  .book-inner{
-    grid-template-columns: 90px 1fr;
-    gap: 10px;
-  }
-}
-
+.spoiler-toggle[aria-expanded="true]()
