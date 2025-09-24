@@ -6,6 +6,7 @@ const MOBILE_MQ = window.matchMedia('(max-width: 480px)');
 const params = new URLSearchParams(window.location.search);
 const rootEl = document.getElementById('widget-root');
 const SINGLE_MODE = params.has('single') || rootEl?.dataset.mode === 'single';
+const COMPACT_MODE = params.has('compact') || rootEl?.dataset.compact === '1';
 
 // data-page-size поддерживается, но в single всегда 1
 const DATA_PAGE_SIZE = parseInt(rootEl?.dataset.pageSize || '', 10);
@@ -46,19 +47,9 @@ const nextBtn = document.getElementById('nextBtn');
 const pageIndicator = document.getElementById('pageIndicator');
 const pagerEl = document.querySelector('.pager');
 
-// Прячем пагинацию и пометим root для CSS (single-flow)
+// Прячем пагинацию в single и маркируем root
 if (SINGLE_MODE && pagerEl) pagerEl.style.display = 'none';
 if (SINGLE_MODE && rootEl) rootEl.dataset.mode = 'single';
-
-// === Авто-высота: шлём родителю размер виджета ===
-function postHeight(){
-  // полная высота контента (включая плавающие элементы)
-  const h = Math.ceil(document.documentElement.scrollHeight);
-  try { window.parent.postMessage({ type:'widgetHeight', height:h }, '*'); } catch(_) {}
-}
-// наблюдаем за изменениями размера
-const resizeObs = new ResizeObserver(() => postHeight());
-resizeObs.observe(document.documentElement);
 
 // === Рендер ===
 function render(){
@@ -78,15 +69,12 @@ function render(){
     nextBtn.disabled = currentPage >= totalPages;
     pageIndicator.textContent = `${currentPage} / ${totalPages}`;
   }
-
-  // после каждого рендера отправляем высоту
-  postHeight();
 }
 
 function createBookCard(book){
   const card = document.createElement('article');
   card.className = 'book-card';
-  if (SINGLE_MODE) card.classList.add('single-flow');  // включаем обтекание и на десктопе
+  if (SINGLE_MODE) card.classList.add('single-flow'); // включаем десктопное обтекание
 
   // Теги
   const tagsWrap = document.createElement('div');
@@ -102,7 +90,7 @@ function createBookCard(book){
   const inner = document.createElement('div');
   inner.className = 'book-inner';
 
-  // Обложка (для single-flow положим внутрь контента; иначе — в левую колонку)
+  // Обложка
   const coverBox = document.createElement('div');
   coverBox.className = 'book-cover';
   const img = document.createElement('img');
@@ -112,7 +100,6 @@ function createBookCard(book){
   if (book.srcset) img.setAttribute('srcset', book.srcset);
   if (book.sizes)  img.setAttribute('sizes',  book.sizes);
   coverBox.appendChild(img);
-  img.addEventListener('load', postHeight);
 
   // Контент
   const content = document.createElement('div');
@@ -130,12 +117,19 @@ function createBookCard(book){
     author.textContent = book.author;
     content.appendChild(author);
   }
-  if (book.annotation){
+
+  // Аннотация (в compact подрезаем)
+  let annotationText = book.annotation || '';
+  if (SINGLE_MODE && COMPACT_MODE && annotationText.length > 700) {
+    annotationText = annotationText.slice(0, 700).trimEnd() + '…';
+  }
+  if (annotationText){
     const p = document.createElement('p');
     p.className = 'book-annotation';
-    p.textContent = book.annotation;
+    p.textContent = annotationText;
     content.appendChild(p);
   }
+
   if (book.readUrl){
     const a = document.createElement('a');
     a.className = 'read-btn';
@@ -152,14 +146,12 @@ function createBookCard(book){
     floatCover.className = 'cover-float';
     const img2 = img.cloneNode(true);
     floatCover.appendChild(img2);
-    img2.addEventListener('load', postHeight);
     content.prepend(floatCover);
   } else if (MOBILE_MQ.matches) {
     const floatCover = document.createElement('div');
     floatCover.className = 'cover-float';
     const img2 = img.cloneNode(true);
     floatCover.appendChild(img2);
-    img2.addEventListener('load', postHeight);
     content.prepend(floatCover);
     card.classList.add('mobile-flow');
   } else {
@@ -171,11 +163,13 @@ function createBookCard(book){
   // Спойлер
   const divider = document.createElement('div');
   divider.className = 'book-divider';
+
   const spoilerBtn = document.createElement('button');
   spoilerBtn.type = 'button';
   spoilerBtn.className = 'spoiler-toggle';
   spoilerBtn.setAttribute('aria-expanded', 'false');
   spoilerBtn.innerHTML = `<span class="chev" aria-hidden="true"></span><span class="label">Тэсса рекомендует, потому что…</span>`;
+
   const spoiler = document.createElement('div');
   spoiler.className = 'spoiler-content';
   const reason = document.createElement('div');
@@ -183,22 +177,32 @@ function createBookCard(book){
   reason.textContent = book.reason || '';
   spoiler.appendChild(reason);
 
+  // В compact-режиме можем скрыть спойлер целиком (по желанию)
+  if (!(SINGLE_MODE && COMPACT_MODE)) {
+    card.appendChild(divider);
+    card.appendChild(spoilerBtn);
+    card.appendChild(spoiler);
+  } else {
+    // компакт: чуть больше зазора снизу
+    const spacer = document.createElement('div');
+    spacer.style.height = '8px';
+    card.appendChild(spacer);
+  }
+
   // Сборка карточки
   card.appendChild(tagsWrap);
   card.appendChild(inner);
-  card.appendChild(divider);
-  card.appendChild(spoilerBtn);
-  card.appendChild(spoiler);
 
-  // Спойлер закрыт по умолчанию
-  spoiler.classList.remove('open');
-  spoilerBtn.setAttribute('aria-expanded','false');
-  spoilerBtn.addEventListener('click',()=>{
-    const expanded = spoilerBtn.getAttribute('aria-expanded') === 'true';
-    spoilerBtn.setAttribute('aria-expanded', String(!expanded));
-    spoiler.classList.toggle('open', !expanded);
-    postHeight(); // высота меняется — сообщаем родителю
-  });
+  // Спойлер поведение
+  if (!(SINGLE_MODE && COMPACT_MODE)) {
+    spoiler.classList.remove('open');
+    spoilerBtn.setAttribute('aria-expanded','false');
+    spoilerBtn.addEventListener('click',()=>{
+      const expanded = spoilerBtn.getAttribute('aria-expanded') === 'true';
+      spoilerBtn.setAttribute('aria-expanded', String(!expanded));
+      spoiler.classList.toggle('open', !expanded);
+    });
+  }
 
   return card;
 }
@@ -217,7 +221,7 @@ async function loadData(){
   render();
 }
 
-// === Пагинация (в single режим не нужна) ===
+// === Пагинация (в single не нужна) ===
 function scrollTopSmooth(){ rootEl?.scrollIntoView({ behavior:'smooth', block:'start' }); }
 if (!SINGLE_MODE) {
   prevBtn.addEventListener('click',()=>{ if (currentPage > 1){ currentPage -= 1; render(); scrollTopSmooth(); }});
@@ -248,6 +252,3 @@ loadData().catch(err=>{
   console.error(err);
   listEl.innerHTML = `<p style="color:#f77">Ошибка загрузки данных.</p>`;
 });
-
-// На всякий случай обновим высоту после полной загрузки
-window.addEventListener('load', postHeight);
